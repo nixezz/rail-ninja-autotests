@@ -5,17 +5,15 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Owner;
 import ninja.rail.core.BaseSeleniumTest;
 import ninja.rail.pages.MainPage;
-import ninja.rail.pages.PassengerDetailsPage;
-import ninja.rail.pages.TimetablePage;
+import ninja.rail.pages.pasengers.PassengersPage;
+import ninja.rail.pages.timetable.TimetablePage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
-
+import static ninja.rail.constants.Constant.TimeoutVariable.EXPLICIT_WAIT_25;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Epic("Тестирование интерфейса")
 public class PassengerNameReflectionTest extends BaseSeleniumTest {
@@ -30,33 +28,26 @@ public class PassengerNameReflectionTest extends BaseSeleniumTest {
         String passengerName = "John Doe";
 
         MainPage mainPage = new MainPage(driver);
-        mainPage.openMainPage()
+        TimetablePage timetablePage = mainPage.openMainPage()
                 .enterDepartureStation(departureStation)
                 .enterArrivalStation(arrivalStation)
                 .setFifthOfNovemberDate()
                 .searchButtonClick();
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_25);
         try {
             wait.until(ExpectedConditions.numberOfWindowsToBe(2));
         } catch (Exception e) {
-            throw new RuntimeException("Новая вкладка не открылась", e);
+            throw new RuntimeException("The new tab didn't open", e);
         }
         mainPage.switchToWindow(1);
 
+        PassengersPage passengerPage = timetablePage.selectFirstTrain()
+                .clickButtonToPassengerInfo();
+        PassengersPage passengerPageResult = passengerPage.enterNameAsInPassport(passengerName);
+        String headerText = passengerPageResult.getHeader();
 
-        TimetablePage timetablePage = new TimetablePage(driver);
-        timetablePage.clickFirstScheduleItem().clickContinue();
-//
-//        String currentUrl = driver.getCurrentUrl();
-//        assertTrue(currentUrl.contains("v9/trains/order/timetable"), "Not switched to timetable page. Current URL: " + currentUrl);
-//
-//        PassengerDetailsPage passengerPage = new PassengerDetailsPage(driver);
-//        passengerPage = timetablePage.clickFlexibleTicketButton();
-//        PassengerDetailsPage passengerPageWithName = passengerPage
-//                .setNameAsInPassportInput(passengerName);
-//
-//        String reflectionName = passengerPageWithName.getReflectionHeaderText();
-//        assertEquals(passengerName, reflectionName, "Рефлексии изменения Adult passenger 1 на значение Name as in passport не произошло.");
+
+        assertEquals(headerText, passengerName, "There was no reflection on the change of Adult passenger 1 to the value of Name as in passport.");
     }
 }

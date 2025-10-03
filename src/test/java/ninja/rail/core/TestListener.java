@@ -17,6 +17,17 @@ public class TestListener implements TestWatcher {
     @Override
     public void testSuccessful(ExtensionContext context) {
         WebDriver driver = getDriverFromContext(context);
+        if (driver != null) {
+            try {
+                LOGGER.info("Test successful: {}. Taking screenshot...", context.getDisplayName());
+                byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+                Allure.getLifecycle().addAttachment("screenshot-" + System.currentTimeMillis(), "image/png", "png", screenshot);
+            } catch (Exception e) {
+                LOGGER.error("Failed to take screenshot: {}", e.getMessage());
+            }
+        } else {
+            LOGGER.warn("Driver is null, cannot take screenshot for test: {}", context.getDisplayName());
+        }
         if(driver != null){
             driver.quit();
         }
