@@ -1,5 +1,6 @@
 package ninja.rail.pages.pasengers;
 
+import io.qameta.allure.Step;
 import ninja.rail.core.BaseSeleniumPage;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -31,12 +32,14 @@ public class PassengersLegacyPage extends BaseSeleniumPage implements Passengers
     }
 
     @Override
+    @Step("Возвращение значения заголовка (Adult passenger 1)")
     public String getHeader() {
         LOGGER.info("Returning the text from the passenger's header (Adult passenger 1): {}", header.getText());
         return header.getText();
     }
 
     @Override
+    @Step("Заполнение поля Name as in passport: {name}")
     public PassengersPage enterNameAsInPassport(String name) {
         LOGGER.info("Entering the passenger's name as in passport: {}", name);
         wait.until(ExpectedConditions.elementToBeClickable(passengerName)).click();
