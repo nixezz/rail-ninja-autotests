@@ -66,10 +66,10 @@ public class TimetableLegacyPage extends BaseSeleniumPage implements TimetablePa
             String newUrl = driver.getCurrentUrl();
             LOGGER.info("The transition is completed. New URL: {}", newUrl);
 
-            if (newUrl.contains("/v9/trains/order/") && newUrl.contains("/passenger")) {
+            if (newUrl != null && newUrl.contains("/v9/trains/order/") && newUrl.contains("/passenger")) {
                 LOGGER.info("Creating a PassengersV9Page object for a URL: {}", newUrl);
                 return new PassengersV9Page(driver);
-            } else if (newUrl.contains("/trains/order/") && newUrl.contains("/passenger")) {
+            } else if (newUrl != null && newUrl.contains("/trains/order/") && newUrl.contains("/passenger")) {
                 LOGGER.info("Creating a PassengerLegacyPage object for a URL: {}", newUrl);
                 return new PassengersLegacyPage(driver);
             } else {
