@@ -49,6 +49,40 @@ public class PassengerFormTest extends BaseSeleniumTest {
 //    }
 
     @Test
+    @DisplayName("Указание даты рождения пассажира младше 12 лет")
+    @Description("При указании возраста младше 12 лет, но старше 3 лет, заголовок должен измениться на Child 1 и рядом должен быть указан возраст")
+    public void passengerForm_ChildAge_changeHeaderTest(){
+        String expectedHeader = "Child 1";
+        String departureStation = "Mecca";
+        String arrivalStation = "Medina";
+        String dayOfBirth = "10.05.2015";
+        String expectedAgeNotify = "(Age: 10)";
+        MainPage mainPage = new MainPage(driver);
+        TimetablePage timetablePage = mainPage.openMainPage()
+                .enterDepartureStation(departureStation)
+                .enterArrivalStation(arrivalStation)
+                .setFifthOfNovemberDate()
+                .searchButtonClick();
+
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_25);
+        try {
+            wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+        } catch (Exception e) {
+            throw new RuntimeException("The new tab didn't open", e);
+        }
+        mainPage.switchToWindow(1);
+
+        PassengersPage passengersPage = timetablePage.selectFirstTrain()
+                .clickButtonToPassengerInfo();
+
+        PassengersPage passengersPageResult = passengersPage.enterBirthdayDate(dayOfBirth);
+        String headerText = passengersPageResult.getHeader();
+        assertEquals(expectedHeader, headerText,"The title 'Child 1' was expected, but it wasn't confirmed.");
+        String ageNotifyText = passengersPageResult.getAgeNotify();
+        assertEquals(expectedAgeNotify, ageNotifyText, "The age notify title '(Age: 10)' was expected, but it wasn't confirmed.");
+    }
+
+    @Test
     @DisplayName("Указание даты рождения пассажира младше 3 лет")
     @Description("При указании возраста младше 3 лет, заголовок должен измениться на Infant 1 и рядом должен быть указан возраст")
     public void passengerForm_InfantAge_changeHeaderTest(){
