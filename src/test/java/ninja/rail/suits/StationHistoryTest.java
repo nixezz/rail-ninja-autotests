@@ -1,4 +1,4 @@
-package ninja.rail.tests;
+package ninja.rail.suits;
 
 import io.qameta.allure.*;
 import io.restassured.http.ContentType;
