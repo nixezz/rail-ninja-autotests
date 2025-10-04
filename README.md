@@ -39,24 +39,27 @@ _Проект является тестовым заданием._
 ### 1. Клонирование репозитория
 ```cmd
 git clone https://github.com/nixezz/rail-ninja-autotests.git 
+```
+### 2. Переход в каталог проекта
+```cmd
 cd your-repo-name
 ```
-### 2. Скачивание зависимостей
+### 3. Скачивание зависимостей
 ```cmd
 mvn clean install
 ```
-### 3. Запуск тестов
+### 4. Запуск тестов
 ```cmd
 mvn test
 ```
-### 4. Генерация отчета тестов Allure
+### 5. Генерация отчета тестов Allure
 ```cmd
 mvn allure:report
 ```
 После выполнения тестов отчеты Allure создаются в папке `target/allure-results`.
 
 
-### 5. Просмотр отчетов Allure
+### 6. Просмотр отчетов Allure
 ```cmd
 mvn allure:serve
 ```
