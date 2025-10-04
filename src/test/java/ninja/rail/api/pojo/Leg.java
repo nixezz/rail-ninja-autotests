@@ -1,8 +1,10 @@
 package ninja.rail.api.pojo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public record Leg(
-        Station departure_station,
-        Station arrival_station,
-        String departure_date,
+        @JsonInclude(JsonInclude.Include.NON_NULL) Station departure_station,
+        @JsonInclude(JsonInclude.Include.NON_NULL) Station arrival_station,
+        @JsonInclude(JsonInclude.Include.NON_NULL) String departure_date,
         String origin_departure_date
 ) {}
