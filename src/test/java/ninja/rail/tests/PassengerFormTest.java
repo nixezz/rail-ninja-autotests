@@ -11,42 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import static ninja.rail.constants.Constant.TimeoutVariable.EXPLICIT_WAIT_25;
+import static ninja.rail.constants.Constant.TimeoutVariable.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Epic("Тестирование интерфейса")
 public class PassengerFormTest extends BaseSeleniumTest {
-
-//    @Test
-//    public void test1(){
-//        String name = "Ivan Ivanov";
-//        String passportNumber = "111111";
-//        String dateOfBirth = "1990-01-01";
-//        GenderEnum gender = GenderEnum.MALE;
-//
-//        String departureStation = "Mecca";
-//        String arrivalStation = "Medina";
-//        MainPage mainPage = new MainPage(driver);
-//        TimetablePage timetablePage = mainPage.openMainPage()
-//                .enterDepartureStation(departureStation)
-//                .enterArrivalStation(arrivalStation)
-//                .setFifthOfNovemberDate()
-//                .searchButtonClick();
-//
-//        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_25);
-//        try {
-//            wait.until(ExpectedConditions.numberOfWindowsToBe(2));
-//        } catch (Exception e) {
-//            throw new RuntimeException("The new tab didn't open", e);
-//        }
-//        mainPage.switchToWindow(1);
-//
-//        PassengersPage passengersPage = timetablePage.selectFirstTrain()
-//                .clickButtonToPassengerInfo();
-//        passengersPage
-//                .enterPassportNumber(passportNumber)
-//                .enterNameAsInPassport(name);
-//    }
 
     @Test
     @DisplayName("Указание даты рождения пассажира младше 12 лет")
@@ -64,7 +33,7 @@ public class PassengerFormTest extends BaseSeleniumTest {
                 .setFifthOfNovemberDate()
                 .searchButtonClick();
 
-        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_25);
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_60);
         try {
             wait.until(ExpectedConditions.numberOfWindowsToBe(2));
         } catch (Exception e) {
@@ -98,7 +67,7 @@ public class PassengerFormTest extends BaseSeleniumTest {
                 .setFifthOfNovemberDate()
                 .searchButtonClick();
 
-        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_25);
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_60);
         try {
             wait.until(ExpectedConditions.numberOfWindowsToBe(2));
         } catch (Exception e) {
@@ -116,37 +85,35 @@ public class PassengerFormTest extends BaseSeleniumTest {
         assertEquals(expectedAgeNotify, ageNotifyText, "The age notify title '(Age: 1)' was expected, but it wasn't confirmed.");
     }
 
-//    @Test
-//    public void test2(){
-//        String name = "Daria Aria";
-//        String passportNumber = "111111";
-//        GenderEnum gender = GenderEnum.FEMALE;
-//
-//        String departureStation = "Mecca";
-//        String arrivalStation = "Medina";
-//        MainPage mainPage = new MainPage(driver);
-//        TimetablePage timetablePage = mainPage.openMainPage()
-//                .enterDepartureStation(departureStation)
-//                .enterArrivalStation(arrivalStation)
-//                .setFifthOfNovemberDate()
-//                .searchButtonClick();
-//
-//        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_25);
-//        try {
-//            wait.until(ExpectedConditions.numberOfWindowsToBe(2));
-//        } catch (Exception e) {
-//            throw new RuntimeException("The new tab didn't open", e);
-//        }
-//        mainPage.switchToWindow(1);
-//
-//        PassengersPage passengersPage = timetablePage.selectFirstTrain()
-//                .clickButtonToPassengerInfo();
-//
-//        passengersPage.enterPassportNumber(passportNumber)
-//                .enterNameAsInPassport(name)
-//                .selectFirstCitizenshipInLists()
-//                .enterGender(gender);
-//
-//
-//    }
+    @Test
+    @DisplayName("Проверка появления подсказки при использовании некорректных символов в имени пассажира")
+    @Description("При вводе в поле имени пассажира НЕ латинских символов должно появится уведомление (подсказка) под полем ввода 'Use latin letters. Do not use special characters'")
+    public void passengerForm_IncorrectPassengerName_checkNotification(){
+        String incorrectName = "123";
+        String expectedNotificationText = "Use latin letters. Do not use special characters";
+        String departureStation = "Mecca";
+        String arrivalStation = "Medina";
+
+        MainPage mainPage = new MainPage(driver);
+        TimetablePage timetablePage = mainPage.openMainPage()
+                .enterDepartureStation(departureStation)
+                .enterArrivalStation(arrivalStation)
+                .setFifthOfNovemberDate()
+                .searchButtonClick();
+
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_60);
+        try {
+            wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+        } catch (Exception e) {
+            throw new RuntimeException("The new tab didn't open", e);
+        }
+        mainPage.switchToWindow(1);
+
+        PassengersPage passengersPage = timetablePage.selectFirstTrain()
+                .clickButtonToPassengerInfo();
+
+        passengersPage.enterNameAsInPassport(incorrectName);
+        String notificationText = passengersPage.getIncorrectNameNotification();
+        assertEquals(expectedNotificationText, notificationText,"The notification 'Use latin letters. Do not use special characters' was expected, but it wasn't confirmed.");
+    }
 }
