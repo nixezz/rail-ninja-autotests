@@ -116,4 +116,36 @@ public class PassengerFormTest extends BaseSeleniumTest {
         String notificationText = passengersPage.getIncorrectNameNotification();
         assertEquals(expectedNotificationText, notificationText,"The notification 'Use latin letters. Do not use special characters' was expected, but it wasn't confirmed.");
     }
+
+    @Test
+    @DisplayName("Проверка появления подсказки при неполном указании данных в имени пассажира")
+    @Description("При вводе в имени пассажира одного слова должно появится уведомление (подсказка) под полем ввода 'Enter first and last name'")
+    public void passengerForm_IncompletePassengerName_checkNotification(){
+        String incorrectName = "Name";
+        String expectedNotificationText = "Enter first and last name";
+        String departureStation = "Mecca";
+        String arrivalStation = "Medina";
+
+        MainPage mainPage = new MainPage(driver);
+        TimetablePage timetablePage = mainPage.openMainPage()
+                .enterDepartureStation(departureStation)
+                .enterArrivalStation(arrivalStation)
+                .setFifthOfNovemberDate()
+                .searchButtonClick();
+
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_WAIT_60);
+        try {
+            wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+        } catch (Exception e) {
+            throw new RuntimeException("The new tab didn't open", e);
+        }
+        mainPage.switchToWindow(1);
+
+        PassengersPage passengersPage = timetablePage.selectFirstTrain()
+                .clickButtonToPassengerInfo();
+
+        passengersPage.enterNameAsInPassport(incorrectName);
+        String notificationText = passengersPage.getIncorrectNameNotification();
+        assertEquals(expectedNotificationText, notificationText,"The notification 'Enter first and last name' was expected, but it wasn't confirmed.");
+    }
 }
