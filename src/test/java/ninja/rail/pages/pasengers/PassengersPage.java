@@ -5,7 +5,7 @@ public interface PassengersPage {
     PassengersPage enterNameAsInPassport(String name);
     PassengersPage enterPassportNumber(String passportNumber);
     PassengersPage selectFirstCitizenshipInLists();
-    PassengersPage enterGender(String gender);
-    PassengersPage enterBirthdayDate(String birthdayDate);
+    PassengersPage enterGender(GenderEnum gender);
+    PassengersPage enterBirthdayDate(String dayOfBirth);
     String getAgeNotify();
 }
