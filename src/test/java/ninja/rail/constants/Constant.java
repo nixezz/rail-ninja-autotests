@@ -7,6 +7,7 @@ public class Constant {
         public static final int IMPLICIT_WAIT = 10;
         public static final Duration EXPLICIT_WAIT = Duration.ofSeconds(15);
         public static final Duration EXPLICIT_WAIT_25 = Duration.ofSeconds(25);
+        public static final Duration EXPLICIT_WAIT_60 = Duration.ofSeconds(60);
         public static final int PAGE_LOAD_TIMEOUT = 15;
     }
 
