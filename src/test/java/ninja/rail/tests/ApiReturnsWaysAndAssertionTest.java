@@ -33,15 +33,8 @@ public class ApiReturnsWaysAndAssertionTest extends BaseSeleniumTest {
 
     @Test
     @Owner("https://github.com/nixezz")
-    @DisplayName("ТС-2: Корректное возвращение расписания поездов через API POST")
-    @Description("Проверить, что API POST /api/v2/timetable возвращает рейсы, в которых станции отправления/прибытия и дата соответствуют значениям, переданным в запросе, и что структура/типы данных корректны.\nОжидаемый результат\n" +
-            "1.\tHTTP-код: 200 OK.\n" +
-            "2.\tContent-Type: application/json.\n" +
-            "3.\tВ ответе есть данные о рейсах.\n" +
-            "4.\tДля каждого найденного рейса:\n" +
-            "departure_station.single_name = Mecca\n" +
-            "arrival_station.single_name = Medina\n" +
-            "departure_date = 05.11.2025\n")
+    @DisplayName("Проверка возвращения расписания поездов через API POST")
+    @Description("Тест проверяет, что API POST /api/v2/timetable возвращает рейсы, в которых станции отправления/прибытия и дата соответствуют значениям, переданным в запросе, и что структура/типы данных корректны")
     public void apiReturnsWaysAndAssertionTest() {
         String requestBody = buildRequestBody();
         Response response = sendPostRequest(requestBody);
@@ -64,7 +57,7 @@ public class ApiReturnsWaysAndAssertionTest extends BaseSeleniumTest {
                 """.formatted(UUID_DEPARTURE_STATION, UUID_ARRIVAL_STATION, DATE_VALUE);
     }
 
-    @Step("Отправка POST-запроса на {0}")
+    @Step("Отправка POST-запроса")
     private Response sendPostRequest(String requestBody) {
         return given()
                 .contentType(ContentType.JSON)
@@ -89,19 +82,20 @@ public class ApiReturnsWaysAndAssertionTest extends BaseSeleniumTest {
 
     @Step("Проверка HTTP-кода")
     private void verifyStatusCode(Response response) {
-        assertEquals(200, response.getStatusCode(), "Expected HTTP status 200 OK");
+        int statusCode = response.getStatusCode();
+        assertEquals(200, statusCode, "Expected HTTP status 200 OK, but received: " + statusCode);
     }
 
     @Step("Проверка Content-Type")
     private void verifyContentType(Response response) {
         String contentType = response.getHeader("Content-Type");
-        assertTrue(contentType.contains("application/json"), "Ожидался Content-Type в application/json, но получен: " + contentType);
+        assertTrue(contentType.contains("application/json"), "Expected Content-Type in application/json, but received: " + contentType);
     }
 
     @Step("Проверка наличия рейсов")
     private void verifyTrainsPresence(Response response) {
         Object trainsObj = response.jsonPath().get("trains");
-        assertNotNull(trainsObj, "Поле 'trains' отсутствует в ответе");
+        assertNotNull(trainsObj, "Field 'trains' missing in the response");
     }
 
     @Step("Проверка деталей рейсов")
@@ -118,30 +112,31 @@ public class ApiReturnsWaysAndAssertionTest extends BaseSeleniumTest {
             return;
         }
 
-        assertFalse(trains.isEmpty(), "Ответ должен содержать хотя бы один поезд.");
+        assertFalse(trains.isEmpty(), "The response must contain at least one train.");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String expectedDate = DATE_VALUE;
 
+        LOGGER.info("Trains returned: {}", trains.size());
         for (int i = 0; i < trains.size(); i++) {
             Map<String, Object> train = (Map<String, Object>) trains.get(i);
 
             @SuppressWarnings("unchecked")
             Map<String, String> departureStation = (Map<String, String>) train.get("departure_station");
-            assertNotNull(departureStation, "Станция отправления пропущена для поезда " + i);
-            assertEquals("Mecca station", departureStation.get("single_name"), "Станция отправления должна быть 'Mecca station' для поезда " + i);
+            assertNotNull(departureStation, "Departure station missed");
+            assertEquals("Mecca station", departureStation.get("single_name"), "The departure station must be 'Mecca station'");
 
             @SuppressWarnings("unchecked")
             Map<String, String> arrivalStation = (Map<String, String>) train.get("arrival_station");
-            assertNotNull(arrivalStation, "Станция прибытия пропущена для поезда " + i);
-            assertEquals("Medina station", arrivalStation.get("single_name"), "Станция прибытия должна быть 'Medina station' для поезда " + i);
+            assertNotNull(arrivalStation, "Arrival station missed");
+            assertEquals("Medina station", arrivalStation.get("single_name"), "The arrival station must be 'Medina station'");
 
             String departureDatetime = (String) train.get("departure_datetime");
-            assertNotNull(departureDatetime, "Дата отправления пропущена для поезда " + i);
+            assertNotNull(departureDatetime, "Departure date missed");
             String departureDate = departureDatetime.split("T")[0];
             LocalDate date = LocalDate.parse(departureDate);
             String formattedDate = date.format(formatter);
-            assertEquals(expectedDate, formattedDate, "Дата отправления должна быть 05.11.2025 для поезда " + i);
+            assertEquals(expectedDate, formattedDate, "The departure date must be 05.11.2025");
         }
     }
 }

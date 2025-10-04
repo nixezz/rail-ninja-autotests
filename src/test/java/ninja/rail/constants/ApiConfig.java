@@ -15,18 +15,18 @@ public class ApiConfig {
 
     public static void init() {
         if (requestSpec == null) {
-            logger.info("Инициализация конфигурации RestAssured с baseURI: {}", HOST);
+            logger.info("Initializing a RestAssured configuration with baseUri: {}", HOST);
             RestAssured.baseURI = HOST;
             requestSpec = new RequestSpecBuilder()
                     .setContentType(ContentType.JSON)
                     .build();
-            logger.debug("RequestSpecification успешно создана");
+            logger.debug("RequestSpecification created successfully");
         }
     }
 
     public static RequestSpecification getRequestSpec() {
         if (requestSpec == null) {
-            logger.warn("RequestSpecification не инициализирована, вызывается init()");
+            logger.warn("RequestSpecification is not initialized, init() is called");
             init();
         }
         return requestSpec;
