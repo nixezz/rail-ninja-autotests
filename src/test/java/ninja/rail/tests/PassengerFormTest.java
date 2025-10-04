@@ -2,6 +2,7 @@ package ninja.rail.tests;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
+import io.qameta.allure.Owner;
 import ninja.rail.core.BaseSeleniumTest;
 import ninja.rail.pages.MainPage;
 import ninja.rail.pages.pasengers.PassengersPage;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PassengerFormTest extends BaseSeleniumTest {
 
     @Test
+    @Owner("https://github.com/nixezz")
     @DisplayName("Указание даты рождения пассажира младше 12 лет")
     @Description("При указании возраста младше 12 лет, но старше 3 лет, заголовок должен измениться на Child 1 и рядом должен быть указан возраст")
     public void passengerForm_ChildAge_changeHeaderTest(){
@@ -35,6 +37,7 @@ public class PassengerFormTest extends BaseSeleniumTest {
     }
 
     @Test
+    @Owner("https://github.com/nixezz")
     @DisplayName("Указание даты рождения пассажира младше 3 лет")
     @Description("При указании возраста младше 3 лет, заголовок должен измениться на Infant 1 и рядом должен быть указан возраст")
     public void passengerForm_InfantAge_changeHeaderTest(){
@@ -52,6 +55,7 @@ public class PassengerFormTest extends BaseSeleniumTest {
     }
 
     @Test
+    @Owner("https://github.com/nixezz")
     @DisplayName("Проверка появления подсказки при использовании некорректных символов в имени пассажира")
     @Description("При вводе в поле имени пассажира НЕ латинских символов должно появится уведомление (подсказка) под полем ввода 'Use latin letters. Do not use special characters'")
     public void passengerForm_IncorrectPassengerName_checkNotification(){
@@ -66,6 +70,7 @@ public class PassengerFormTest extends BaseSeleniumTest {
     }
 
     @Test
+    @Owner("https://github.com/nixezz")
     @DisplayName("Проверка появления подсказки при неполном указании данных в имени пассажира")
     @Description("При вводе в имени пассажира одного слова должно появится уведомление (подсказка) под полем ввода 'Enter first and last name'")
     public void passengerForm_IncompletePassengerName_checkNotification(){
