@@ -1,12 +1,7 @@
 package ninja.rail.core;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import static ninja.rail.constants.Constant.TimeoutVariable.EXPLICIT_WAIT;
 import static ninja.rail.constants.Constant.Urls.MAIN_PAGE;
 
 public abstract class BaseSeleniumPage {
@@ -29,10 +24,5 @@ public abstract class BaseSeleniumPage {
 
     public void switchToWindow(int windowIndex) {
         driver.switchTo().window(driver.getWindowHandles().toArray()[windowIndex].toString());
-    }
-
-    public WebElement waitElementIsVisible(WebElement element) {
-        new WebDriverWait(driver, EXPLICIT_WAIT).until(ExpectedConditions.visibilityOf(element));
-        return element;
     }
 }

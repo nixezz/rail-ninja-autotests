@@ -15,8 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
-import static ninja.rail.constants.Constant.TimeoutVariable.EXPLICIT_WAIT;
-import static ninja.rail.constants.Constant.TimeoutVariable.EXPLICIT_WAIT_25;
+import static ninja.rail.constants.Constant.TimeoutVariable.*;
 import static ninja.rail.constants.Constant.Urls.TIMETABLE_PAGE;
 import static ninja.rail.constants.Constant.Urls.TIMETABLE_V9_PAGE;
 
@@ -69,7 +68,7 @@ public class MainPage extends BaseSeleniumPage {
     public MainPage(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
-        wait = new WebDriverWait(driver, EXPLICIT_WAIT);
+        wait = new WebDriverWait(driver, EXPLICIT_WAIT_60);
     }
 
     @Step("Открытие главной страницы https://rail.ninja")
@@ -175,7 +174,7 @@ public class MainPage extends BaseSeleniumPage {
 
             driver.switchTo().window(newWindowHandle);
             LOGGER.info("Switching to a new tab is done. Handle: {}", newWindowHandle);
-            WebDriverWait extendedWait = new WebDriverWait(driver, EXPLICIT_WAIT_25);
+            WebDriverWait extendedWait = new WebDriverWait(driver, EXPLICIT_WAIT_60);
             extendedWait.until(ExpectedConditions.or(
                     ExpectedConditions.urlContains(TIMETABLE_PAGE),
                     ExpectedConditions.urlContains(TIMETABLE_V9_PAGE)
