@@ -72,6 +72,7 @@ public class PassengersLegacyPage extends BaseSeleniumPage implements Passengers
     }
 
     @Override
+    @Step("Заполнение даты рождения пассажира: {dayOfBirth}")
     public PassengersPage enterBirthdayDate(String dayOfBirth) {
         LOGGER.info("Setting date of birth...");
         try {
@@ -203,6 +204,7 @@ public class PassengersLegacyPage extends BaseSeleniumPage implements Passengers
     }
 
     @Override
+    @Step("Возвращение значения заголовка возраста (для пассажиров младше 12 лет)")
     public String getAgeNotify() {
         LOGGER.info("Returning the age of the passenger's age, if they child or infant...");
         try{
