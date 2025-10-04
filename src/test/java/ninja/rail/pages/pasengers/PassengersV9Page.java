@@ -56,17 +56,17 @@ public class PassengersV9Page extends BaseSeleniumPage implements PassengersPage
 
     @Override
     public PassengersPage enterPassportNumber(String passportNumber) {
-        return null;
+        return this;
     }
 
     @Override
     public PassengersPage selectFirstCitizenshipInLists() {
-        return null;
+        return this;
     }
 
     @Override
     public PassengersPage enterGender(GenderEnum gender) {
-        return null;
+        return this;
     }
 
     @Override
@@ -180,6 +180,21 @@ public class PassengersV9Page extends BaseSeleniumPage implements PassengersPage
             WebElement ageContainer = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"checkout-passengers-form\"]/div[1]/div[3]/div[2]/div/div[1]/span[2]")));
             String text = ageContainer.getText();
             LOGGER.info("Returning text: {}", text);
+            return text;
+        } catch (Exception e) {
+            LOGGER.warn("Text is not detected, returning empty string: {}", e.getMessage());
+            return "";
+        }
+    }
+
+    @Override
+    @Step("Возвращение текста ошибки под полем ввода имени и фамилии пассажира")
+    public String getIncorrectNameNotification() {
+        LOGGER.info("Returning the error text under the passenger's first and last name field...");
+        try {
+            WebElement notificationContainer = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"checkout-passengers-form_passengersCategories_adult_0_full_name_help\"]/div")));
+            String text = notificationContainer.getText();
+            LOGGER.info("Text detected: {}", text);
             return text;
         } catch (Exception e) {
             LOGGER.warn("Text is not detected, returning empty string: {}", e.getMessage());

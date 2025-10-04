@@ -8,4 +8,5 @@ public interface PassengersPage {
     PassengersPage enterGender(GenderEnum gender);
     PassengersPage enterBirthdayDate(String dayOfBirth);
     String getAgeNotify();
+    String getIncorrectNameNotification();
 }
