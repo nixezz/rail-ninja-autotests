@@ -2,9 +2,12 @@ package ninja.rail.pages.pasengers;
 
 import io.qameta.allure.Step;
 import ninja.rail.core.BaseSeleniumPage;
+import ninja.rail.utils.DateUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,11 +15,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static ninja.rail.constants.Constant.TimeoutVariable.EXPLICIT_WAIT;
 
 public class PassengersLegacyPage extends BaseSeleniumPage implements PassengersPage {
     private static final Logger LOGGER = LoggerFactory.getLogger(PassengersLegacyPage.class);
     private final WebDriverWait wait;
+    private final Actions actions;
 
     @FindBy(xpath = "//span[@class='sc-cf59c1f-1 dfrRB']")
     private WebElement header;
@@ -29,6 +35,7 @@ public class PassengersLegacyPage extends BaseSeleniumPage implements Passengers
         this.pagePath = "";
         PageFactory.initElements(driver, this);
         wait = new WebDriverWait(driver, EXPLICIT_WAIT);
+        actions = new Actions(driver);
     }
 
     @Override
@@ -60,17 +67,152 @@ public class PassengersLegacyPage extends BaseSeleniumPage implements Passengers
     }
 
     @Override
-    public PassengersPage enterGender(String gender) {
-        return null;
+    public PassengersPage enterGender(GenderEnum gender) {
+        return this;
     }
 
     @Override
-    public PassengersPage enterBirthdayDate(String birthdayDate) {
-        return null;
+    public PassengersPage enterBirthdayDate(String dayOfBirth) {
+        LOGGER.info("Setting date of birth...");
+        try {
+            LOGGER.info("Parsing dateOfBirth: {}", dayOfBirth);
+            int[] dayOfBirthArray = DateUtils.parseDate(dayOfBirth);
+            int day = dayOfBirthArray[0], month = dayOfBirthArray[1], year = dayOfBirthArray[2];
+
+            LOGGER.info("Search for filling fields");
+            WebElement dayContainer = null;
+            boolean isElementVisible = false;
+            int maxScrollAttempts = 150;
+
+            while (!isElementVisible && maxScrollAttempts > 0) {
+                try {
+                    dayContainer = wait.until(ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("//*[@id='checkout-passengers-form_passengersCategories_adult_0_dob']/div[1]")
+                    ));
+                    if (dayContainer.isDisplayed()) {
+                        isElementVisible = true;
+                        LOGGER.info("Day container found and visible");
+                    } else {
+                        actions.sendKeys(Keys.PAGE_DOWN).perform();
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        maxScrollAttempts--;
+                    }
+                } catch (Exception e) {
+                    actions.sendKeys(Keys.PAGE_DOWN).perform();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    maxScrollAttempts--;
+                }
+            }
+
+            LOGGER.info("Setting day: {}", day);
+            actions.moveToElement(dayContainer).click().perform();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//div[contains(@class, 'ant-select-selector')]")
+            ));
+            WebElement dayInputElement = dayContainer.findElement(
+                    By.cssSelector("input.ant-select-selection-search-input")
+            );
+
+            String inputId = dayInputElement.getAttribute("id");
+            String prefix = inputId + "_list_";
+            String dayIndex = Integer.toString(day - 1);
+            String targetDayId = prefix + dayIndex;
+
+            String currentActive = dayInputElement.getAttribute("aria-activedescendant");
+            while (!currentActive.contains(targetDayId)) {
+                actions.sendKeys(Keys.ARROW_DOWN).perform();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                currentActive = dayInputElement.getAttribute("aria-activedescendant");
+            }
+            actions.sendKeys(Keys.ENTER).perform();
+
+            LOGGER.info("Setting month: {}", month);
+            WebElement monthContainer = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//*[@id='checkout-passengers-form_passengersCategories_adult_0_dob']/div[2]")
+            ));
+            actions.moveToElement(monthContainer).click().perform();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//div[contains(@class, 'ant-select-selector')]")
+            ));
+            WebElement monthInputElement = monthContainer.findElement(
+                    By.cssSelector("input.ant-select-selection-search-input")
+            );
+            String monthInputId = monthInputElement.getAttribute("id");
+            String monthPrefix = monthInputId + "_list_";
+            String monthIndex = Integer.toString(month - 1);
+            String targetMonthId = monthPrefix + monthIndex;
+            currentActive = monthInputElement.getAttribute("aria-activedescendant");
+            while (!currentActive.equals(targetMonthId)) {
+                actions.sendKeys(Keys.ARROW_DOWN).perform();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                currentActive = monthInputElement.getAttribute("aria-activedescendant");
+            }
+            actions.sendKeys(Keys.ENTER).perform();
+
+            LOGGER.info("Setting year: {}", year);
+            WebElement yearContainer = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//*[@id='checkout-passengers-form_passengersCategories_adult_0_dob']/div[3]")
+            ));
+            actions.moveToElement(yearContainer).click().perform();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//div[contains(@class, 'ant-select-selector')]")
+            ));
+            WebElement yearInputElement = yearContainer.findElement(
+                    By.cssSelector("input.ant-select-selection-search-input")
+            );
+
+            String yearInputId = yearInputElement.getAttribute("id");
+            String yearPrefix = yearInputId + "_list_";
+            String yearIndex = Integer.toString(2025 - year); // 2025 - id 0, 2024 - id 1 and etc.
+            String targetYearId = yearPrefix + yearIndex;
+
+
+            currentActive = yearInputElement.getAttribute("aria-activedescendant");
+            while (!currentActive.equals(targetYearId)) {
+                actions.sendKeys(Keys.ARROW_DOWN).perform();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                currentActive = yearInputElement.getAttribute("aria-activedescendant");
+            }
+            actions.sendKeys(Keys.ENTER).perform();
+            LOGGER.info("Date of birth is set.");
+        } catch (Exception e) {
+            LOGGER.error("An error occurred when setting the date of birth of the Infant: {}", e.getMessage());
+            throw new RuntimeException("An error occurred when setting the date of birth of the Infant: " + e);
+        }
+        return this;
     }
 
     @Override
     public String getAgeNotify() {
-        return "";
+        LOGGER.info("Returning the age of the passenger's age, if they child or infant...");
+        try{
+            WebElement ageContainer = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"checkout-passengers-form\"]/div[1]/div[3]/div[2]/div/div[1]/span[2]")));
+            String text = ageContainer.getText();
+            LOGGER.info("Text detected: {}", text);
+            return text;
+        } catch (Exception e) {
+            LOGGER.warn("Text is not detected, returning empty string: {}", e.getMessage());
+            return "";
+        }
     }
 }
